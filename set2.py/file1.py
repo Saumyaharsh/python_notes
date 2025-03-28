@@ -24,7 +24,7 @@ for i in range(1,a+1):
     ''' 
 
 '''
-#Sahi run nahi ho rhah
+
 # print the pattern
 n = int(input('Enter the number of rows '))
 for i in range(0,n):
