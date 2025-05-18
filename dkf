@@ -1,0 +1,256 @@
+[33mcommit d36e58a7867dbe3c70f5ec6180fada720b2e15cd[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;32mmain[m[33m)[m
+Author: Saumya <saumyaharsh72@gmail.com>
+Date:   Sun May 18 16:14:56 2025 +0530
+
+    18 May
+
+[1mdiff --git a/questions/B_splines_ques1.py b/questions/B_splines_ques1.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..36e670d[m
+[1m--- /dev/null[m
+[1m+++ b/questions/B_splines_ques1.py[m
+[36m@@ -0,0 +1,26 @@[m
+[32m+[m[32mimport numpy as np[m
+[32m+[m[32mdef find_knot_span(n,p,u,U):[m
+[32m+[m[32m    if u==U[n+1]:[m
+[32m+[m[32m        return n[m
+[32m+[m[32m    low = p[m
+[32m+[m[32m    high = n+1[m
+[32m+[m[32m    mid = (low + high)//2[m
+[32m+[m[32m    while u<U[mid] or u>= U[mid+1]:[m
+[32m+[m[32m        if u < U[mid]:[m
+[32m+[m[32m            high = mid[m
+[32m+[m[32m        else:[m
+[32m+[m[32m            low = mid[m
+[32m+[m[32m        mid = (low + high)//2[m
+[32m+[m[32m    return mid[m
+[32m+[m[32mp = 3 # degree of curve[m
+[32m+[m[32mU = [0.0, 0.0, 0.0, 0.0, 0.1477, 0.2789, 0.4195, 0.5785, 0.7383, 1.0, 1.0, 1.0, 1.0][m
+[32m+[m[32mcontrol_point = 9[m
+[32m+[m[32mn = control_point - 1[m
+[32m+[m[32mu_vec = np.linspace(0,1,51)[m
+[32m+[m[32mfor i in range(0,51):[m
+[32m+[m[32m    u = u_vec[i][m
+[32m+[m[32m    span = find_knot_span(n,p,u,U)[m
+[32m+[m[32m    print('Knot span for {} is {}'.format(u,span))[m
+[32m+[m
+[32m+[m
+[32m+[m
+[1mdiff --git a/questions/B_splines_ques2.py b/questions/B_splines_ques2.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..dda8370[m
+[1m--- /dev/null[m
+[1m+++ b/questions/B_splines_ques2.py[m
+[36m@@ -0,0 +1,68 @@[m
+[32m+[m[32mimport numpy as np[m
+[32m+[m
+[32m+[m[32m# 1. Degree of the B-spline[m
+[32m+[m[32mp = 3[m
+[32m+[m
+[32m+[m[32m# 2. Knot vector (length = number of control points + degree + 1)[m
+[32m+[m[32mU = [0.0, 0.0, 0.0, 0.0, 0.1477, 0.2789, 0.4195, 0.5785, 0.7383, 1.0, 1.0, 1.0, 1.0][m
+[32m+[m
+[32m+[m[32m# 3. Number of control points = 9, so n = 8 (last index is 8)[m
+[32m+[m[32mn = 8[m
+[32m+[m
+[32m+[m[32m# Function to find the knot span (i such that U[i] <= u < U[i+1])[m
+[32m+[m[32mdef find_knot_span(n, p, u, U):[m
+[32m+[m[32m    if u == U[n+1]:  # Special case: if u is at the end, return last valid span[m
+[32m+[m[32m        return n[m
+[32m+[m[32m    low = p[m
+[32m+[m[32m    high = n + 1[m
+[32m+[m[32m    mid = (low + high) // 2[m
+[32m+[m
+[32m+[m[32m    # Binary search to find the correct span[m
+[32m+[m[32m    while u < U[mid] or u >= U[mid + 1]:[m
+[32m+[m[32m        if u < U[mid]:[m
+[32m+[m[32m            high = mid[m
+[32m+[m[32m        else:[m
+[32m+[m[32m            low = mid[m
+[32m+[m[32m        mid = (low + high) // 2[m
+[32m+[m[32m    return mid[m
+[32m+[m
+[32m+[m[32m# Function to compute the p+1 non-zero basis functions N[i-p] to N[i][m
+[32m+[m[32mdef basis_functions(span, u, p, U):[m
+[32m+[m[32m    N = [0.0 for _ in range(p+1)]      # Store the basis function values[m
+[32m+[m[32m    left = [0.0 for _ in range(p+1)]   # Left differences[m
+[32m+[m[32m    right = [0.0 for _ in range(p+1)]  # Right differences[m
+[32m+[m
+[32m+[m[32m    N[0] = 1.0  # Start with zeroth-degree basis function[m
+[32m+[m
+[32m+[m[32m    # Loop to compute all higher degree basis functions[m
+[32m+[m[32m    for j in range(1, p+1):[m
+[32m+[m[32m        left[j] = u - U[span + 1 - j][m
+[32m+[m[32m        right[j] = U[span + j] - u[m
+[32m+[m[32m        saved = 0.0[m
+[32m+[m
+[32m+[m[32m        for r in range(j):[m
+[32m+[m[32m            denom = right[r + 1] + left[j - r][m
+[32m+[m[32m            if denom == 0:[m
+[32m+[m[32m                temp = 0.0[m
+[32m+[m[32m            else:[m
+[32m+[m[32m                temp = N[r] / denom[m
+[32m+[m[32m            N[r] = saved + right[r + 1] * temp[m
+[32m+[m[32m            saved = left[j - r] * temp[m
+[32m+[m[32m        N[j] = saved[m
+[32m+[m[32m    return N[m
+[32m+[m
+[32m+[m[32m# 4. Generate 51 u-values from 0 to 1 (inclusive)[m
+[32m+[m[32mu_values = np.linspace(0, 1, 51)[m
+[32m+[m
+[32m+[m[32m# 5. For each u, compute span and basis functions[m
+[32m+[m[32mprint("u-value\t\tNon-zero basis functions (N[i-3] to N[i])")[m
+[32m+[m[32mprint("-" * 60)[m
+[32m+[m
+[32m+[m[32mfor u in u_values:[m
+[32m+[m[32m    span = find_knot_span(n, p, u, U)      # Step 1: Find the span[m
+[32m+[m[32m    N_vals = basis_functions(span, u, p, U)  # Step 2: Compute basis functions[m
+[32m+[m[32m    start_idx = span - p                   # The first basis function index[m
+[32m+[m
+[32m+[m[32m    # Format and print the 4 non-zero basis functions[m
+[32m+[m[32m    basis_str = ", ".join([f"N[{start_idx + i}]={N_vals[i]:.4f}" for i in range(p+1)])[m
+[32m+[m[32m    print(f"{u:.4f}\t\t{basis_str}")[m
+[1mdiff --git a/questions/Bsplines_ques3.py b/questions/Bsplines_ques3.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..14335ac[m
+[1m--- /dev/null[m
+[1m+++ b/questions/Bsplines_ques3.py[m
+[36m@@ -0,0 +1,97 @@[m
+[32m+[m[32mimport numpy as np[m
+[32m+[m[32mimport matplotlib.pyplot as plt[m
+[32m+[m
+[32m+[m[32m# 1. Degree[m
+[32m+[m[32mp = 3[m
+[32m+[m
+[32m+[m[32m# 2. Knot vector[m
+[32m+[m[32mU = [0.0, 0.0, 0.0, 0.0, 0.1477, 0.2789, 0.4195, 0.5785, 0.7383, 1.0, 1.0, 1.0, 1.0][m
+[32m+[m
+[32m+[m[32m# 3. Control points[m
+[32m+[m[32mcontrol_points = [[m
+[32m+[m[32m    (0, 30),[m
+[32m+[m[32m    (10, 36),[m
+[32m+[m[32m    (20, 37.5),[m
+[32m+[m[32m    (30, 35),[m
+[32m+[m[32m    (40, 29),[m
+[32m+[m[32m    (50, 21),[m
+[32m+[m[32m    (60, 14),[m
+[32m+[m[32m    (70, 9),[m
+[32m+[m[32m    (80, 6)[m
+[32m+[m[32m][m
+[32m+[m
+[32m+[m[32mn = len(control_points) - 1  # Last control point index[m
+[32m+[m
+[32m+[m[32m# 4. Span-finding function[m
+[32m+[m[32mdef find_knot_span(n, p, u, U):[m
+[32m+[m[32m    if u == U[n+1]:[m
+[32m+[m[32m        return n[m
+[32m+[m[32m    low = p[m
+[32m+[m[32m    high = n + 1[m
+[32m+[m[32m    mid = (low + high) // 2[m
+[32m+[m[32m    while u < U[mid] or u >= U[mid + 1]:[m
+[32m+[m[32m        if u < U[mid]:[m
+[32m+[m[32m            high = mid[m
+[32m+[m[32m        else:[m
+[32m+[m[32m            low = mid[m
+[32m+[m[32m        mid = (low + high) // 2[m
+[32m+[m[32m    return mid[m
+[32m+[m
+[32m+[m[32m# 5. Basis function computation[m
+[32m+[m[32mdef basis_functions(span, u, p, U):[m
+[32m+[m[32m    N = [0.0 for _ in range(p+1)][m
+[32m+[m[32m    left = [0.0 for _ in range(p+1)][m
+[32m+[m[32m    right = [0.0 for _ in range(p+1)][m
+[32m+[m[32m    N[0] = 1.0[m
+[32m+[m[32m    for j in range(1, p+1):[m
+[32m+[m[32m        left[j] = u - U[span + 1 - j][m
+[32m+[m[32m        right[j] = U[span + j] - u[m
+[32m+[m[32m        saved = 0.0[m
+[32m+[m[32m        for r in range(j):[m
+[32m+[m[32m            denom = right[r + 1] + left[j - r][m
+[32m+[m[32m            if denom == 0:[m
+[32m+[m[32m                temp = 0.0[m
+[32m+[m[32m            else:[m
+[32m+[m[32m                temp = N[r] / denom[m
+[32m+[m[32m            N[r] = saved + right[r + 1] * temp[m
+[32m+[m[32m            saved = left[j - r] * temp[m
+[32m+[m[32m        N[j] = saved[m
+[32m+[m[32m    return N[m
+[32m+[m
+[32m+[m[32m# 6. Generate 51 u values[m
+[32m+[m[32mu_values = np.linspace(0, 1, 51)[m
+[32m+[m
+[32m+[m[32m# 7. Compute curve points[m
+[32m+[m[32mcurve_points = [][m
+[32m+[m
+[32m+[m[32mfor u in u_values:[m
+[32m+[m[32m    span = find_knot_span(n, p, u, U)[m
+[32m+[m[32m    N_vals = basis_functions(span, u, p, U)[m
+[32m+[m
+[32m+[m[32m    # Compute curve point C(u)[m
+[32m+[m[32m    Cx = 0.0[m
+[32m+[m[32m    Cy = 0.0[m
+[32m+[m[32m    for j in range(p+1):[m
+[32m+[m[32m        i = span - p + j[m
+[32m+[m[32m        x, y = control_points[i][m
+[32m+[m[32m        Cx += N_vals[j] * x[m
+[32m+[m[32m        Cy += N_vals[j] * y[m
+[32m+[m
+[32m+[m[32m    curve_points.append((Cx, Cy))[m
+[32m+[m
+[32m+[m[32m# 8. Extract for plotting[m
+[32m+[m[32mcurve_x = [pt[0] for pt in curve_points][m
+[32m+[m[32mcurve_y = [pt[1] for pt in curve_points][m
+[32m+[m[32mctrl_x = [pt[0] for pt in control_points][m
+[32m+[m[32mctrl_y = [pt[1] for pt in control_points][m
+[32m+[m
+[32m+[m[32m# 9. Plot[m
+[32m+[m[32mplt.figure(figsize=(8, 5))[m
+[32m+[m[32mplt.plot(curve_x, curve_y, label="B-spline Curve", color='blue')[m
+[32m+[m[32mplt.plot(ctrl_x, ctrl_y, '--o', label="Control Polygon", color='gray')[m
+[32m+[m[32mplt.title("Cubic B-spline Curve")[m
+[32m+[m[32mplt.xlabel("X")[m
+[32m+[m[32mplt.ylabel("Y")[m
+[32m+[m[32mplt.legend()[m
+[32m+[m[32mplt.grid(True)[m
+[32m+[m[32mplt.show()[m
+[1mdiff --git a/questions/least_square_method.py b/questions/least_square_method.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d2259d1[m
+[1m--- /dev/null[m
+[1m+++ b/questions/least_square_method.py[m
+[36m@@ -0,0 +1,35 @@[m
+[32m+[m[32mfrom scipy import linalg[m
+[32m+[m[32mimport numpy as np[m
+[32m+[m[32m# This is the solution of least square question given in sir's ppt not a general solution[m
+[32m+[m[32mdef f(x,y,l_0,y_0):[m
+[32m+[m[32m    n = len(x)[m
+[32m+[m[32m    l1= [][m
+[32m+[m[32m    for i in range (0,n):[m
+[32m+[m[32m        e = y[i] - (y_0 + (l_0*x[i]))[m
+[32m+[m[32m        l1.append(e)[m
+[32m+[m[32m    e_max = abs(max(l1))[m
+[32m+[m[32m    e_min = abs(min(l1))[m
+[32m+[m[32m    s = e_max + e_min[m
+[32m+[m[32m    return s[m
+[32m+[m
+[32m+[m[41m    [m
+[32m+[m[32mx = [-2,-1,0,1,2][m
+[32m+[m[32my = [3,5,2,1,2][m
+[32m+[m[32mn = len(x)[m
+[32m+[m[32mxi = sum(x)[m
+[32m+[m[32myi = sum(y)[m
+[32m+[m[32mx_2 = sum(num*num for num in x)[m
+[32m+[m[32mmul_list = list(map(lambda a,b: a*b , x,y))[m
+[32m+[m[32mx_y = sum(mul_list)[m
+[32m+[m[32mA = [[n,xi],[xi,x_2]][m
+[32m+[m[32mB = [yi,x_y][m
+[32m+[m[32mA_inv = linalg.inv(A)[m
+[32m+[m[32m#print(A_inv)[m
+[32m+[m[32mans = np.dot(A_inv,B)[m
+[32m+[m[32my_0 = ans[0][m
+[32m+[m[32ml_0 = ans[1][m
+[32m+[m[32ms = f(x,y,l_0,y_0)[m
+[32m+[m[32mprint('answer is ',s)[m
+[32m+[m[32m# print(ans)[m
+[32m+[m
+[32m+[m
