@@ -41,7 +41,7 @@ class matrix:
                 ans = 0
                 l1 = []
                 for j in range(0,self.m1,1):
-                    val =  self.a1[j][i]*b.a1[j][i]
+                    val =  self.a1[j][i]*b.a1[i][j]
                     ans += val
                     l1.append(ans)
                 ans_matrix.append(l1)
@@ -55,35 +55,7 @@ class matrix:
         ans = inv(self.a1)
         return ans
     
-# n1 = int(input('Enter the no. of row of matrix1 '))
-# m1 = int(input('Enter the no. of column of matrix 1 '))
-# n2 = int(input('Enter the no. of row of matrix2 '))
-# m2 = int(input('Enter the no. of column of matrix2 ' ))
-# array1 = []
-# array2 = []
-# for i in range(0,n1):
-#     l1 = []
-#     for j in range(0,m1):
-#         a = float(input('Enter elements of matrix1 '))
-#         l1.append(a)
-#     array1.append(l1)
-# for i in range(0,n2):
-#     l1 = []
-#     for j in range(0,m2):
-#         a = float(input('Enter elements of matrix2 '))
-#         l1.append(a)
-#     array2.append(l1)
-    
-# m1 = matrix(array1,n1,m1)
-# m2 = matrix(array2,n2,m2)
-# ans = m1+m2
-# ans2 = m1 - m2
-# ans3 = m1*m2
-# ans4 = m1.__inv__()
-# print(ans)
-# print(ans2)
-# print(ans3)
-# print(ans4)
+
 f = open('file1.txt','r')
 l1 = (f.read())
 
